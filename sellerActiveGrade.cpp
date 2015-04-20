@@ -293,7 +293,7 @@ Handle <Value> sort_seller_by_grade(const Arguments &args){
 #if 1
     cout << "gradeSeller end:"<<endl;
     while(gradeSeller!= NULL){
-        cout << "grade Seller >> "  << gradeSeller->seller.sellerID << " " << gradeSeller->seller.historyOrderCnt << " " << gradeSeller->seller.todayOrderCnt << " " << gradeSeller->seller.todayOrderCnt << " ? " << gradeSeller->seller.grade << endl;
+        cout << "grade Seller >> "  << gradeSeller->seller.sellerID << " " << gradeSeller->seller.historyOrderCnt << " " << gradeSeller->seller.todayOrderCnt << " " << gradeSeller->seller.todayPushCnt << " ? " << gradeSeller->seller.grade << endl;
         gradeSeller = gradeSeller->next;
     }
 #endif
