@@ -316,8 +316,8 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/licj/prj/policy/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/home/licj/.node-gyp/0.10.33/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/licj/.node-gyp/0.10.33" "-Dmodule_root_dir=/home/licj/prj/policy" binding.gyp
-Makefile: $(srcdir)/../../.node-gyp/0.10.33/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../../usr/local/lib/node_modules/node-gyp/addon.gypi
+cmd_regen_makefile = cd $(srcdir); /home/jun/software/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/jun/prj/V8AddonsPolicy/build/config.gypi -I/home/jun/software/node-gyp/addon.gypi -I/home/jun/.node-gyp/0.10.32/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/jun/.node-gyp/0.10.32" "-Dmodule_root_dir=/home/jun/prj/V8AddonsPolicy" binding.gyp
+Makefile: $(srcdir)/../../.node-gyp/0.10.32/common.gypi $(srcdir)/../../software/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included

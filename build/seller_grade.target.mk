@@ -30,9 +30,9 @@ CFLAGS_CC_Debug := \
 	-fexceptions
 
 INCS_Debug := \
-	-I/home/licj/.node-gyp/0.10.33/src \
-	-I/home/licj/.node-gyp/0.10.33/deps/uv/include \
-	-I/home/licj/.node-gyp/0.10.33/deps/v8/include
+	-I/home/jun/.node-gyp/0.10.32/src \
+	-I/home/jun/.node-gyp/0.10.32/deps/uv/include \
+	-I/home/jun/.node-gyp/0.10.32/deps/v8/include
 
 DEFS_Release := \
 	'-D_LARGEFILE_SOURCE' \
@@ -50,7 +50,6 @@ CFLAGS_Release := \
 	-O2 \
 	-fno-strict-aliasing \
 	-fno-tree-vrp \
-	-fno-tree-sink \
 	-fno-omit-frame-pointer
 
 # Flags passed to only C files.
@@ -63,9 +62,9 @@ CFLAGS_CC_Release := \
 	-fexceptions
 
 INCS_Release := \
-	-I/home/licj/.node-gyp/0.10.33/src \
-	-I/home/licj/.node-gyp/0.10.33/deps/uv/include \
-	-I/home/licj/.node-gyp/0.10.33/deps/v8/include
+	-I/home/jun/.node-gyp/0.10.32/src \
+	-I/home/jun/.node-gyp/0.10.32/deps/uv/include \
+	-I/home/jun/.node-gyp/0.10.32/deps/v8/include
 
 OBJS := \
 	$(obj).target/$(TARGET)/sellerActiveGrade.o
