@@ -45,12 +45,14 @@ class sellerActiveGrade {
 };
 
 sellerActiveGrade::sellerActiveGrade(){
+	cout<< "sellerActiveGrade()"<<endl;
     pSeller = new SInode;
     pSeller->pre = NULL;
     pSeller->next = NULL;
 }
 
 sellerActiveGrade::~sellerActiveGrade(){
+	cout<< "~sellerActiveGrade()"<<endl;
     SInode *tmp = pSeller;
     SInode *next = tmp->next;
     while(tmp != NULL){
@@ -265,21 +267,15 @@ SInode *sellerActiveGrade::get_active_grade(){
 Handle <Value> sort_seller_by_grade(const Arguments &args){
 
     HandleScope scope;
-
-    /*
-       Handle <Object> v8obj = Object::new();
-       v8obj->Set(String::NewSymbol("historyOrderCnt"),Integer::New(1));
-       v8obj->Set(String::NewSymbol("todayOrderCnt"),Integer::New(1));
-       v8obj->Set(String::NewSymbol("todayPushCnt"),Integer::New(1));
-       v8obj->Set(String::NewSymbol("sellerID"),Integer::New(1));
-
-       if(v8obj->Has(String::New("historyOrderCnt"))) {
-       Handle <Value> value = v8obj->Get(String::New("historyOrderCnt"));
-       }
-       */
     sellerActiveGrade *pSellerGrade = new sellerActiveGrade();
 
     Handle<Array> array = Handle<Array>::Cast(args[0]);
+    //确保参数是回调函数，是函数
+    if (!args[1]->IsFunction()) {
+	  return ThrowException(Exception::TypeError(
+			  String::New("Second argument must be a callback function")));
+	}
+	Local<Function> callback = Local<Function>::Cast(args[1]);
 
     for(int i=0; i<array->Length(); i=i+4){
         int id = array->Get(i)->ToInteger()->Value();
@@ -291,14 +287,39 @@ Handle <Value> sort_seller_by_grade(const Arguments &args){
     }
     SInode *gradeSeller = pSellerGrade->get_active_grade();
 #if 1
+	SInode *pgs = gradeSeller;
     cout << "gradeSeller end:"<<endl;
-    while(gradeSeller!= NULL){
-        cout << "grade Seller >> "  << gradeSeller->seller.sellerID << " " << gradeSeller->seller.historyOrderCnt << " " << gradeSeller->seller.todayOrderCnt << " " << gradeSeller->seller.todayOrderCnt << " ? " << gradeSeller->seller.grade << endl;
-        gradeSeller = gradeSeller->next;
+    while(pgs!= NULL){
+        cout << "grade Seller >> "  << pgs->seller.sellerID << " " << pgs->seller.historyOrderCnt << " " << pgs->seller.todayOrderCnt << " " << pgs->seller.todayPushCnt << " ? " << pgs->seller.grade << endl;
+        pgs = pgs->next;
     }
 #endif
-    //return scope.Close(pSellerGrade);
-    return scope.Close(Integer::New(100));
+	int length = 0;
+	SInode *p = gradeSeller;
+	while(p != NULL){
+		length++;
+		p = p->next;
+	}	
+
+	cout << "======= "<<endl;
+	//Local<Value> sortSeller = Local<Array>::New(length);
+	Local<Array> sortSeller;
+	sortSeller = sortSeller->New(length);
+	cout << "length=" << length << " ; "<< sortSeller->Length()<<endl;
+	p = gradeSeller;
+	int i=0;
+	while(p != NULL){
+		sortSeller->Set(i,Integer::New(p->seller.sellerID));
+		p = p->next;
+		i++;
+	}
+	cout << "===3==== "<<endl;
+
+	const unsigned argc = 1;
+	Local<Value> result[argc] = {sortSeller};	
+	callback->Call(Context::GetCurrent()->Global(), argc, result);
+
+    return scope.Close(sortSeller);
 
 }
 

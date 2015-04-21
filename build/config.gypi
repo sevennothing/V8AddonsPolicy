@@ -9,7 +9,7 @@
   },
   "variables": {
     "clang": 0,
-    "gcc_version": 48,
+    "gcc_version": 44,
     "host_arch": "x64",
     "node_install_npm": "true",
     "node_prefix": "",
@@ -33,7 +33,7 @@
     "v8_no_strict_aliasing": 1,
     "v8_use_snapshot": "true",
     "want_separate_host_toolset": 0,
-    "nodedir": "/home/jun/.node-gyp/0.10.32",
+    "nodedir": "/home/licj/.node-gyp/0.10.33",
     "copy_dev_lib": "true",
     "standalone_static_library": 1
   }
