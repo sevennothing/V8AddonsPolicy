@@ -10,6 +10,8 @@ using namespace v8;
 using namespace node;
 
 const long MAX_PUSH_COUNT_ONE_DAY =  50000L;
+const int  PUSH_COMMON_PARAM = 4;
+const float ACTIVE_CARE = 0.5;
 
 typedef struct sellerInfo {
     int sellerID;
@@ -38,10 +40,12 @@ class sellerActiveGrade {
         SInode *get_active_grade();
     private:
         SInode  *pSeller;
-        SInode *data_normalization();
+        int    data_normalization();
         SInode *grade_sort(SInode *dst);
+
         int calc_alpha();
         int calc_beta();
+        float calc_gama(int maxValue, int dstValue);   //推送权重补偿
 };
 
 sellerActiveGrade::sellerActiveGrade(){
@@ -92,7 +96,7 @@ SInode *sellerActiveGrade::insert_seller(int id, int h,int t,int p){
     return pSeller;
 }
 
-SInode *sellerActiveGrade::data_normalization(){
+int sellerActiveGrade::data_normalization(){
     int minH = pSeller->seller.historyOrderCnt;
     int maxH = pSeller->seller.historyOrderCnt;
     int	maxP = pSeller->seller.todayPushCnt;
@@ -114,16 +118,26 @@ SInode *sellerActiveGrade::data_normalization(){
     tmpSInode = pSeller;
 
     cout << "maxH = " << maxH << "; maxP= " << maxP <<endl;
+
     while(tmpSInode != NULL){
-        tmpSInode->seller.historyRate = (float)tmpSInode->seller.historyOrderCnt/maxH;
-        tmpSInode->seller.pushRate = (float)tmpSInode->seller.todayPushCnt/maxP;
+        if(maxH == 0){
+            tmpSInode->seller.historyRate = 1;
+        }else{
+            tmpSInode->seller.historyRate = (float)tmpSInode->seller.historyOrderCnt/maxH;
+        }
+        #if 0
+        if(maxP == 0){
+            tmpSInode->seller.pushRate = 1;
+        }else{
+            tmpSInode->seller.pushRate = (float)tmpSInode->seller.todayPushCnt/maxP;
+        }
+        #endif
+
         tmpSInode = tmpSInode->next;
     }
 
-    return pSeller;
+    return maxP;
 }
-
-
 
 int sellerActiveGrade::calc_alpha(){
     SInode *tmpSInode = pSeller;
@@ -144,16 +158,21 @@ int sellerActiveGrade::calc_beta(){
     SInode *tmpSInode = pSeller;
 
     while(tmpSInode != NULL){
-        if(tmpSInode->seller.pushRate == 0){
-            tmpSInode->seller.beta = MAX_PUSH_COUNT_ONE_DAY;
+        if(tmpSInode->seller.todayPushCnt == 0){
+            tmpSInode->seller.beta = (ACTIVE_CARE * tmpSInode->seller.alpha) + 1;
             tmpSInode = tmpSInode->next;
             continue;
         }
-        tmpSInode->seller.beta = (float)tmpSInode->seller.alpha / tmpSInode->seller.pushRate;
+        tmpSInode->seller.beta = ACTIVE_CARE * tmpSInode->seller.alpha;
         tmpSInode = tmpSInode->next;
     }
     return 0;
 }
+
+float sellerActiveGrade::calc_gama(int maxValue, int dstValue){
+    return (float)(maxValue - dstValue) / PUSH_COMMON_PARAM;
+}
+
 
 SInode *sellerActiveGrade::grade_sort(SInode *dst){
     if(dst == NULL) return pSeller;
@@ -234,15 +253,16 @@ SInode *sellerActiveGrade::grade_sort(SInode *dst){
 }
 
 SInode *sellerActiveGrade::get_active_grade(){
-    data_normalization();
+    int maxPushCnt = data_normalization();
     calc_alpha();
     calc_beta();
-
 
     SInode *tmpSInode = pSeller;
 
     while(tmpSInode != NULL){
-        tmpSInode->seller.grade = tmpSInode->seller.beta + tmpSInode->seller.historyRate;
+        // gama值作为推送补偿，补偿系数为 PUSH_COMMON_PARAM
+        float gama = calc_gama(maxPushCnt,tmpSInode->seller.todayPushCnt);
+        tmpSInode->seller.grade = tmpSInode->seller.beta + tmpSInode->seller.historyRate + gama;
         tmpSInode = tmpSInode->next;
     }
 
